@@ -14,9 +14,11 @@ app.use('/api', apiRouter);               //all routes that start with /api will
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
-app.use(errorHandler());
 app.use(cors());
 
+app.use('/api', apiRouter);               //all routes that start with /api will be sent to apiRouter
+
+app.use(errorHandler());
 
 app.listen(PORT, () => {                    //opens PORT
   console.log(`listening on PORT ${PORT}`);
