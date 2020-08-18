@@ -1,6 +1,7 @@
 const express = require('express');
 const artistsRouter = express.Router();    //create artists express router
 const sqlite3 = require('sqlite3');
+const app = require('../server');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite')
 
 
@@ -63,12 +64,13 @@ artistsRouter.post('/', (req, res, next) => {
               if (error){
                 next(error);
               } else {
-                db.get(`SELECT * FROM Artist WHERE id = ${this.lastID}`, (error, artist) => {     //retrieve last added artist
-                  if (error){
-                    next(error);
-                  }
-                  res.status(201).json({ artist: artist });       //send last added artist with repsonse
-                })
+                db.get(`SELECT * FROM Artist WHERE id = ${this.lastID}`,    //retrieve last added artist
+                  (error, artist) => {    
+                    if (error){
+                      next(error);
+                    }
+                    res.status(201).json({ artist: artist });       //send last added artist with repsonse
+                  })
               }
             }
     );
@@ -99,19 +101,41 @@ artistsRouter.put('/:artistId', (req, res, next) => {
             if (error){
               next(error);
             } else {
-              db.get(`SELECT * FROM Artist WHERE id = ${req.params.artistId}`, (error, artist) => {     //retrieve last added artist
-                if (error){
-                  next(error);
-                }
-                res.status(200).json({ artist: artist });       //send last added artist with repsonse
-              })
+              db.get(`SELECT * FROM Artist WHERE id = ${req.params.artistId}`,    //retrieve last added artist
+                (error, artist) => {     
+                  if (error){
+                    next(error);
+                  }
+                  res.status(200).json({ artist: artist });       //send last added artist with repsonse
+                })
             }
           }
     );
 });
 
 
-
+//DELETE handler changes employement states of aritst in Artist database
+artistsRouter.delete('/:artistId', (req, res, next) => {
+  db.run(`UPDATE Artist SET is_currently_employed = $isCurrentlyEmployed WHERE id = $artistId`,
+    {
+      $isCurrentlyEmployed: 0,                    //set employment to 0
+      $artistId: req.params.artistId
+    },
+    function(error){
+      if (error){
+        next(error);
+      } else {
+        db.get(`SELECT * FROM Artist WHERE id = ${req.params.artistId}`,    //retrieve last added artist
+          (error, artist) => {                              
+            if (error){
+              next(error);
+            }
+            res.status(200).json({ artist: artist });       //send last deleted artist with repsonse
+          })
+      }
+    }
+  );
+});
 
 
 module.exports = artistsRouter;       //export artists Router
