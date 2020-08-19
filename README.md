@@ -1,20 +1,21 @@
 # X-Press Publishing
 
-## Project Overview
+This is a capstone project,I am building all of the routing and database logic for an internal tool for a comic book publishing company called X-Press Publishing. My progress is saved throughout this repository. To build the project yourself, follow the steps below.
 
-In this capstone project, you will build all of the routing and database logic for an internal tool for a comic book publishing company called X-Press Publishing.
+## Project Overview
 
 The X-Press Publishing internal tool should allow users to:
 - Create, view, and update artists
 - Create, view, update, and delete comic book series
 - Create, view, update, and delete issues of a specific comic book series
 
-You can view all of this functionality in action in the video below:
-
-<video width="100%" height="100%" controls>
-   <source src="https://s3.amazonaws.com/codecademy-content/programs/build-apis/solution-videos/XPressPublishing480.mov" type="video/mp4">
- The markdown processor does not support the video tag.
-</video>
+In the root directory, you will need to install:
+- npm install
+- npm install express
+- npm install body-parser
+- npm install morgan
+- npm install cors
+- npm install errorhandler
 
 ## How To Begin
 
@@ -131,3 +132,11 @@ To run these tests, first, open the root project directory in your terminal. The
 
 As you implement functionality, run the tests to ensure you are creating correctly named variables and functions that return the proper values.
 The tests will additionally help you identify edge cases that you may not have anticipated when first writing the application.
+
+## Running Program in Browser
+
+To run the program in your browser you will need to run the following in the root directory of your command terminal:
+*node migration.js*   -- to initialize your database tables
+*node server.js*      -- to get your server to start listening on the specified port
+
+Then you will need to open the *index.html* file in your browser.
