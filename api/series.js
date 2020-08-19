@@ -110,6 +110,31 @@ seriesRouter.put('/:seriesId', (req, res, next) => {
 });
 
 
+//DELETE route deletes a series is its not a part of an issue
+seriesRouter.delete('/:seriesId', (req, res, next) => {
+  db.get('SELECT * FROM Issue WHERE series_id = $seriesId', { $seriesId: req.params.seriesId },    //retrieves artist information using req artistId
+    (error, issue) => {
+      if (error){
+        next(error);
+      } else {
+        if (issue) {
+          return res.sendStatus(400);                     // bad request (series is apart of an Issue)
+        }
+
+        db.run('DELETE FROM Series WHERE id = $seriesId', { $seriesId: req.params.seriesId },
+          error => {
+            if (error){
+            next(error);
+          } else {
+            res.sendStatus(204);
+          }
+          }
+        )
+      }
+    }
+  );
+});
+
 
 
 module.exports = seriesRouter;     //export series router

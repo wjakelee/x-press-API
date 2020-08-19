@@ -42,7 +42,7 @@ issuesRouter.post('/', (req, res, next) => {
   const publicationDate = req.body.issue.publicationDate;
   const artistId = req.body.issue.artistId;
 
-  db.run('SELECT * FROM Artist WHERE id = $artistId', { $artistId: artistId },    //retrieves artist information using req artistId
+  db.get('SELECT * FROM Artist WHERE id = $artistId', { $artistId: artistId },    //retrieves artist information using req artistId
     (error, artist) => {
       if (error){
         next(error);
@@ -85,21 +85,17 @@ issuesRouter.put('/:issueId', (req, res, next) => {
   const publicationDate = req.body.issue.publicationDate;
   const artistId = req.body.issue.artistId;
 
-  if (!name || !issueNumber || !publicationDate || !artistId) {
-    return res.sendStatus(400);                                   // bad request (incorrect parameters)
-  }
-
-  db.run('SELECT * FROM Artist WHERE id = $artistId', { $artistId: artistId },    //retrieves artist information using req artistId
+  db.get('SELECT * FROM Artist WHERE id = $artistId', { $artistId: artistId },    //retrieves artist information using req artistId
     (error, artist) => {
       if (error){
         next(error);
       } else {
-        if (!artist) {
+        if (!name || !issueNumber || !publicationDate || !artist) {
           return res.sendStatus(400);                                   // bad request (incorrect parameters)
         }
 
-        db.run(`UPDATE Issue SET name = $name, issue_number= $issue_number, publication_date = $publication_date,
-                artist_id = $artist_id, series_id = $series_id WHERE issueId = $issueId`,
+        db.run(`UPDATE Issue SET name = $name, issue_number = $issueNumber, publication_date = $publicationDate,
+                artist_id = $artistId, series_id = $seriesId WHERE id = $issueId`,
                 {
                   $name: name,
                   $issueNumber: issueNumber,
@@ -112,10 +108,13 @@ issuesRouter.put('/:issueId', (req, res, next) => {
                   if (error){
                     next(error);
                   } else {
-                    db.get(`SELECT * FROM Issue WHERE id = ${req.params.issueId}`,
-                    (error, issue) => {
-                      res.status(200).json({ issue: issue })
-                    })
+                      db.get(`SELECT * FROM Issue WHERE id = ${req.params.issueId}`,
+                      (error, issue) => {
+                        if (error){
+                          next(error);
+                        }
+                        res.status(200).json({ issue: issue })
+                      })
                   }
                 }
           );
