@@ -79,6 +79,52 @@ issuesRouter.post('/', (req, res, next) => {
   
 
 
+issuesRouter.put('/:issueId', (req, res, next) => {
+  const name = req.body.issue.name;
+  const issueNumber = req.body.issue.issueNumber;
+  const publicationDate = req.body.issue.publicationDate;
+  const artistId = req.body.issue.artistId;
+
+  if (!name || !issueNumber || !publicationDate || !artistId) {
+    return res.sendStatus(400);                                   // bad request (incorrect parameters)
+  }
+
+  db.run('SELECT * FROM Artist WHERE id = $artistId', { $artistId: artistId },    //retrieves artist information using req artistId
+    (error, artist) => {
+      if (error){
+        next(error);
+      } else {
+        if (!artist) {
+          return res.sendStatus(400);                                   // bad request (incorrect parameters)
+        }
+
+        db.run(`UPDATE Issue SET name = $name, issue_number= $issue_number, publication_date = $publication_date,
+                artist_id = $artist_id, series_id = $series_id WHERE issueId = $issueId`,
+                {
+                  $name: name,
+                  $issueNumber: issueNumber,
+                  $publicationDate: publicationDate,
+                  $artistId: artistId,
+                  $seriesId: req.params.seriesId,
+                  $issueId: req.params.issueId
+                },
+                function(error){
+                  if (error){
+                    next(error);
+                  } else {
+                    db.get(`SELECT * FROM Issue WHERE id = ${req.params.issueId}`,
+                    (error, issue) => {
+                      res.status(200).json({ issue: issue })
+                    })
+                  }
+                }
+          );
+
+      }
+    }
+  );
+});
+
 
 
 module.exports = issuesRouter;      //export issues router
