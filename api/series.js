@@ -1,7 +1,11 @@
 const express = require('express');
 const seriesRouter = express.Router();   //create series express router
+
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite')
+
+const issuesRouter = require('./issues.js');    //import issues router
+
 
 /*for any route that has a /:seriesId parameter, this handler will be executed first
 to make sure the seriesId exists in the database and add it to the requested object*/
@@ -19,6 +23,10 @@ seriesRouter.param('seriesId', (req, res, next, seriesId) => {
     }
   );
 });
+
+
+//all routes that have endpoint /series/:seriesId/issues will be sent to issuesRouter
+seriesRouter.use('/:seriesId/issues', issuesRouter);
 
 
 //GET handler retrieves all series currently in the Series database
