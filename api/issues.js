@@ -78,7 +78,7 @@ issuesRouter.post('/', (req, res, next) => {
 });
   
 
-
+//PUT handler updates an issue in the issue database
 issuesRouter.put('/:issueId', (req, res, next) => {
   const name = req.body.issue.name;
   const issueNumber = req.body.issue.issueNumber;
@@ -125,6 +125,18 @@ issuesRouter.put('/:issueId', (req, res, next) => {
   );
 });
 
+
+//DELETE route deletes an issue from the database
+issuesRouter.delete('/:issueId', (req, res, next) => {
+  db.run('DELETE FROM Issue WHERE id = $issueId', { $issueId: req.params.issueId },
+    error => {
+      if (error){
+        next(error);
+      } else {
+        res.sendStatus(204);
+      }
+    })
+});
 
 
 module.exports = issuesRouter;      //export issues router
